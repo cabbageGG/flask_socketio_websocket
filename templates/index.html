@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Flask socketio websocket test</title>
+    <script type="text/javascript" src="/static/js/jquery-1.11.2.js"></script>
+    <script type="text/javascript" src="/static/js/socket.io-2.0.4.js"></script>
+    <script>
+        $(document).ready(function () {
+            var socket = io.connect('http://127.0.0.1:5101/test');
+            socket.on('get price',function (data) {
+                $("#G_EURUSD_bid").html(data['data']['G_EURUSD_bid'])
+                var symbols = new Array('a','b','c','d','e','f','g','h','i','j')
+                for (i=0;i<symbols.length;i++) {
+                    var key = 'G_' + symbols[i] + '_1'
+                    $('#'+key).html(data['data'][key].substr(0,7))
+                    key = 'G_' + symbols[i] + '_2'
+                    $('#'+key).html(data['data'][key].substr(0,7))
+                    key = 'G_' + symbols[i] + '_time'
+                    $('#'+key).html(getLocalTime(data['data'][key]))
+                    key = 'MRG_' + symbols[i] + '_1'
+                    $('#'+key).html(data['data'][key].substr(0,7))
+                    key = 'MRG_' + symbols[i] + '_2'
+                    $('#'+key).html(data['data'][key].substr(0,7))
+                    key = 'MRG_' + symbols[i] + '_time'
+                    $('#'+key).html(getLocalTime(data['data'][key]))
+                }
+            })
+        });
+        function getLocalTime(nS) {
+            return new Date(parseInt(nS) * 1000).toLocaleString().replace(/:\d{1,2}$/,' ');
+        }
+    </script>
+    <script>
+        $(function () {
+            console.log('init')
+            var symbols = new Array('a','b','c','d','e','f','g','h','i','j')
+            for (i=0;i<symbols.length;i++) {
+                var html_str ='<div id="'+symbols[i]+'" style="background-color:#FFFFFF;height:100px;width:400px;float:left;">'+
+                                '<table border="1">'+
+                                    '<tr><th>'+symbols[i]+'</th><th>1</th><th>2</th><th>date</th></tr>'+
+                                    '<tr><td>G</td><td id="G_'+symbols[i]+'_1"></td><td id="G_'+symbols[i]+'_2"></td><td id="G_'+symbols[i]+'_time"></td></tr>'+
+                                    '<tr><td>MRG</td><td id="MRG_'+symbols[i]+'_1"></td><td id="MRG_'+symbols[i]+'_2"></td><td id="MRG_'+symbols[i]+'_time"></td></tr>'+
+                                '</table>'+
+                              '</div>'
+                $("#prices_container").append(html_str)
+            }
+        })
+    </script>
+</head>
+<body>
+<h1>实时数据监测</h1>
+<div id="prices_container" style="width:1000px">
+</div>
+</body>
+</html>
